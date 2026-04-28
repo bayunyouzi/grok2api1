@@ -1,0 +1,52 @@
+apiVersion: zeabur.com/v1
+kind: Template
+metadata:
+  name: ChatGPT2API
+spec:
+  description: ChatGPT 官网图片生成、图片编辑能力的 OpenAI 兼容 API / 代理，集成在线画图与号池管理
+  icon: https://raw.githubusercontent.com/basketikun/chatgpt2api/main/assets/image.png
+  tags:
+    - AI
+    - API
+    - Image Generation
+  variables:
+    - key: PUBLIC_DOMAIN
+      type: DOMAIN
+      name: Domain
+      description: ChatGPT2API 服务的访问域名
+    - key: AUTH_KEY
+      type: STRING
+      name: Auth Key
+      description: API 认证密钥，用于 Authorization: Bearer <auth-key>
+  services:
+    - name: chatgpt2api
+      icon: https://raw.githubusercontent.com/basketikun/chatgpt2api/main/assets/image.png
+      template: PREBUILT
+      domainKey: PUBLIC_DOMAIN
+      spec:
+        source:
+          image: ghcr.io/basketikun/chatgpt2api:latest
+        ports:
+          - id: web
+            port: 80
+            type: HTTP
+        volumes:
+          - id: data
+            dir: /app/data
+        env:
+          STORAGE_BACKEND:
+            default: json
+            expose: true
+          CHATGPT2API_AUTH_KEY:
+            default: ${AUTH_KEY}
+            expose: true
+          CHATGPT2API_BASE_URL:
+            default: https://${PUBLIC_DOMAIN}
+            expose: true
+        instructions:
+          - type: TEXT
+            title: 认证密钥
+            content: API 认证密钥: ${AUTH_KEY}
+          - type: DOMAIN
+            title: 访问地址
+            content: https://${PUBLIC_DOMAIN}
